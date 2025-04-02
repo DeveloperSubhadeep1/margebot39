@@ -1,5 +1,18 @@
 from dotenv import load_dotenv
 import logging
+import sys
+import glob
+import importlib
+from pathlib import Path
+from pyrogram import Client, idle, __version__
+from pyrogram.raw.all import layer
+import logging
+import logging.config
+import time
+import asyncio
+from datetime import date, datetime
+import pytz
+from aiohttp import web
 
 logging.getLogger("pymongo").setLevel(logging.WARNING)  # Suppresses DEBUG logs
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -51,7 +64,7 @@ from helpers.utils import UserSettings, get_readable_file_size, get_readable_tim
 
 botStartTime = time.time()
 parent_id = Config.GDRIVE_FOLDER_ID
-
+PORT_is = Config.PORT
 
 class MergeBot(Client):
     def start(self):
@@ -720,7 +733,50 @@ async def makeButtons(bot: Client, m: Message, db: dict):
     return markup
 
 
+# LOGCHANNEL = Config.LOGCHANNEL
+# try:
+#     if Config.USER_SESSION_STRING is None:
+#         raise KeyError
+#     LOGGER.info("Starting USER Session")
+#     userBot = Client(
+#         name="merge-bot-user",
+#         session_string=Config.USER_SESSION_STRING,
+#         no_updates=True,
+#     )
+
+# except KeyError:
+#     userBot = None
+#     LOGGER.warning("No User Session, Default Bot session will be used")
+
+
+# if __name__ == "__main__":
+#     # with mergeApp:
+#     #     bot:User = mergeApp.get_me()
+#     #     bot_username = bot.username
+#     try:
+#         with userBot:
+#             userBot.send_message(
+#                 chat_id=int(LOGCHANNEL),
+#                 text="Bot booted with Premium Account,\n\n  Thanks for using <a href='https://github.com/yashoswalyo/merge-bot'>this repo</a>",
+#                 disable_web_page_preview=True,
+#             )
+#             user = userBot.get_me()
+#             Config.IS_PREMIUM = user.is_premium
+#     except Exception as err:
+#         LOGGER.error(f"{err}")
+#         Config.IS_PREMIUM = False
+#         pass
+
+#     # mergeApp.run()
+
+
+   
+
+
+#     mergeApp.run(PORT_is)
+
 LOGCHANNEL = Config.LOGCHANNEL
+
 try:
     if Config.USER_SESSION_STRING is None:
         raise KeyError
@@ -730,28 +786,31 @@ try:
         session_string=Config.USER_SESSION_STRING,
         no_updates=True,
     )
-
 except KeyError:
     userBot = None
     LOGGER.warning("No User Session, Default Bot session will be used")
 
-
 if __name__ == "__main__":
-    # with mergeApp:
-    #     bot:User = mergeApp.get_me()
-    #     bot_username = bot.username
     try:
-        with userBot:
+        if userBot:
+            userBot.start()  # Start user session
+            LOGGER.info("UserBot started successfully.")
+
             userBot.send_message(
                 chat_id=int(LOGCHANNEL),
-                text="Bot booted with Premium Account,\n\n  Thanks for using <a href='https://github.com/yashoswalyo/merge-bot'>this repo</a>",
+                text="Bot booted with Premium Account,\n\nThanks for using <a href='https://github.com/yashoswalyo/merge-bot'>this repo</a>",
                 disable_web_page_preview=True,
             )
+
             user = userBot.get_me()
             Config.IS_PREMIUM = user.is_premium
-    except Exception as err:
-        LOGGER.error(f"{err}")
-        Config.IS_PREMIUM = False
-        pass
+        else:
+            Config.IS_PREMIUM = False
 
-    mergeApp.run(port=8080)
+    except Exception as err:
+        LOGGER.error(f"Error: {err}")
+        Config.IS_PREMIUM = False
+
+    # Start mergeApp before running it
+    # mergeApp.start()
+    mergeApp.run(host="0.0.0.0", port=5000)
