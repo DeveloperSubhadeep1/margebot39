@@ -12,3 +12,4 @@ TgCrypto
 aiohttp
 route
 pytz
+requests
