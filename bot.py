@@ -754,4 +754,4 @@ if __name__ == "__main__":
         Config.IS_PREMIUM = False
         pass
 
-    mergeApp.run(host="0.0.0.0", port=8080)
+    mergeApp.run()
