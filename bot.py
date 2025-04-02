@@ -1,5 +1,8 @@
 from dotenv import load_dotenv
+import logging
 
+logging.getLogger("pymongo").setLevel(logging.WARNING)  # Suppresses DEBUG logs
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 load_dotenv(
     "config.env",
     override=True,
@@ -751,4 +754,4 @@ if __name__ == "__main__":
         Config.IS_PREMIUM = False
         pass
 
-    mergeApp.run()
+    mergeApp.run(host="0.0.0.0", port=8080)
